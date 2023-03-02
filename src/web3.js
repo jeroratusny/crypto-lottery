@@ -2,7 +2,7 @@
 
 import Web3 from 'web3';
 
-const web3 = new Web3('https://sepolia.infura.io/v3/d9979c0504154fa98e431abb0a424c1d');
+const web3 = new Web3('https://polygon-mumbai.infura.io/v3/d9979c0504154fa98e431abb0a424c1d');
 //const contractAddress = '0x03116d5dA54Bc8507f8F26Df4136eb5C7492A141';
 
 const contractAddress = '0x03116d5dA54Bc8507f8F26Df4136eb5C7492A141';

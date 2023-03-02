@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from "react";
 import { contract } from './web3.js';
-import { web3 } from './web3.js';
 import  EnterButton  from './EnterButton';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
@@ -39,19 +38,21 @@ function App() {
   
     const providerOptions = {
       walletconnect: {
-        package: WalletConnectProvider, // import walletconnect provider
+        package: WalletConnectProvider,
         options: {
-          infuraId: 'd9979c0504154fa98e431abb0a424c1d',
+          rpc: {
+            80001: 'https://rpc-mumbai.matic.today',
+          },
         },
       },
     };
-  
+
     const web3Modal = new Web3Modal({
       network: 'mumbai',
       cacheProvider: true,
       providerOptions,
     });
-  
+
     const provider = await web3Modal.connect();
   
     const selectedAddress = provider.selectedAddress;
@@ -71,13 +72,12 @@ function App() {
     const tx = {
       from: selectedAddress,
       to: contract.options.address,
-      value: value,
+      value: Web3.utils.toHex(value),
       data: data,
-      gasString
+      gas:gasString
     };
-
     console.log(tx);
-  
+
     const signedTx = await provider.request({
       method: 'eth_sendTransaction',
       params: [tx],
@@ -105,15 +105,10 @@ function App() {
        
         <h3> Wallet Address: {walletAddress}</h3>
 
-
         <button
-        
         onClick={handleEnter}
-
         > Enter </button>
         
-
-
       </header>
     </div>
   );
