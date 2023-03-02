@@ -1,8 +1,10 @@
 import './App.css';
 import React, { useEffect, useState } from "react";
 import { contract } from './web3.js';
+import { web3 } from './web3.js';
 import  EnterButton  from './EnterButton';
 import Web3 from 'web3';
+import { Web3Provider } from '@ethersproject/providers';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
@@ -10,6 +12,8 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 function App() {
 
   const [walletAddress, setwalletAddress] = useState("");
+  let accounts = '';
+  
 
   async function requestAccount() {
     console.log('Requesting account...');
@@ -18,10 +22,12 @@ function App() {
       console.log('detected');
 
       try {
-        const accounts = await window.ethereum.request({
+         accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        console.log(accounts);
+        console.log(accounts[0]);
+        
+        accounts[0] = web3.utils.toChecksumAddress(accounts[0]);
         setwalletAddress(accounts[0]);
 
       } catch (error) {
@@ -86,6 +92,72 @@ function App() {
     console.log('Transaction hash:', signedTx);
   }
   
+  async function selectWinner() {
+
+    try {
+
+      const providerOptions = {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {
+            rpc: {
+              80001: 'https://rpc-mumbai.matic.today',
+            },
+          },
+        },
+      };
+      
+     const web3Modal = new Web3Modal({
+        network: 'mumbai',
+        cacheProvider: true,
+        providerOptions,
+      });
+    
+
+      const provider = await web3Modal.connect();
+      const web3Provider = new Web3Provider(provider);
+      
+      const signer = web3Provider.getSigner();
+      const data = contract.methods.generateRandomNumber().encodeABI();
+    
+  
+      const tx = {
+        from: walletAddress,
+        to: contract.options.address,
+        data: data,
+      };
+      console.log(tx);
+  
+      const signedTx = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [tx],
+      });
+
+
+      const data2 = contract.methods.selectWinner().encodeABI();
+    
+  
+      const tx2 = {
+        from: walletAddress,
+        to: contract.options.address,
+        data: data2,
+      };
+      console.log(tx2);
+  
+      const signedTx2 = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [tx2],
+      });
+
+      console.log(`Winner selected!`);
+
+ 
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
   
 
   // Create a provider to interact with a smart contract
@@ -102,12 +174,19 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-       
         <h3> Wallet Address: {walletAddress}</h3>
+
+        <button
+        onClick={requestAccount}
+        > Connect Wallet </button>
 
         <button
         onClick={handleEnter}
         > Enter </button>
+
+        <button
+        onClick={selectWinner}
+        > Select Winner </button>
         
       </header>
     </div>
