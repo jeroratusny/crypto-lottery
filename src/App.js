@@ -2,7 +2,7 @@ import './App.css';
 import React, { useEffect, useState } from "react";
 import { contract } from './web3.js';
 import { web3 } from './web3.js';
-import  EnterButton  from './EnterButton';
+import  Balance  from './Balance';
 import Web3 from 'web3';
 import { Web3Provider } from '@ethersproject/providers';
 import Web3Modal from 'web3modal';
@@ -12,6 +12,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 function App() {
 
   const [walletAddress, setwalletAddress] = useState("");
+  const [message, setMessage] = useState("");
   let accounts = '';
   
 
@@ -90,10 +91,13 @@ function App() {
     });
   
     console.log('Transaction hash:', signedTx);
+    setMessage("Ticket purchased successfully!"); // set the message after the transaction is successful
   }
   
   async function selectWinner() {
-
+    if (walletAddress == '') {
+      await requestAccount(); // Llama a `requestAccount()` si la variable de estado es `false`.
+    }
     try {
 
       const providerOptions = {
@@ -117,26 +121,10 @@ function App() {
       const provider = await web3Modal.connect();
       const web3Provider = new Web3Provider(provider);
       
-      const signer = web3Provider.getSigner();
-      const data = contract.methods.generateRandomNumber().encodeABI();
-    
-  
-      const tx = {
-        from: walletAddress,
-        to: contract.options.address,
-        data: data,
-      };
-      console.log(tx);
-  
-      const signedTx = await provider.request({
-        method: 'eth_sendTransaction',
-        params: [tx],
-      });
-
+      const signer = web3Provider.getSigner();    
 
       const data2 = contract.methods.selectWinner().encodeABI();
     
-  
       const tx2 = {
         from: walletAddress,
         to: contract.options.address,
@@ -157,6 +145,8 @@ function App() {
       console.error(error);
     }
   }
+
+  
   
   
 
@@ -174,20 +164,21 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h3> Wallet Address: {walletAddress}</h3>
+        <h1> Crypto Lottery </h1>
+        <Balance /> 
 
-        <button
-        onClick={requestAccount}
-        > Connect Wallet </button>
+        <h3> Wallet Address: {walletAddress}</h3>
 
         <button
         onClick={handleEnter}
         > Enter </button>
-
+        <br></br>
+        
         <button
         onClick={selectWinner}
         > Select Winner </button>
         
+        {message && <div>{message}</div>} {/* show the message if it's not empty */}
       </header>
     </div>
   );
