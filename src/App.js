@@ -9,6 +9,7 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
 
+
 function App() {
 
   const [walletAddress, setwalletAddress] = useState("");
@@ -89,10 +90,40 @@ function App() {
       method: 'eth_sendTransaction',
       params: [tx],
     });
-  
+    
     console.log('Transaction hash:', signedTx);
-    setMessage("Ticket purchased successfully!"); // set the message after the transaction is successful
-  }
+    checkTransactionStatus(signedTx);
+  }  
+
+  const checkTransactionStatus = async (signedTx) => {
+    try {
+      const response = await fetch(
+        `https://api-testnet.polygonscan.com/api?module=transaction&action=gettxreceiptstatus&txhash=${signedTx}&apikey=435I5UVKHDD1QKPD9TH91ZR8UBY1D8AZJZ`
+      );
+      const data = await response.json();
+
+      if (data.result.status === "1") {
+        console.log("Transaction confirmed!");
+        setMessage("Transaction confirmed!");
+      } else if (data.result.status === "0") {
+        console.log("Transaction failed!");
+        setMessage("Transaction failed!");
+      } else {
+        console.log("Transaction is still pending.");
+        setTimeout(() => {
+          checkTransactionStatus(signedTx);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+}
+
+    
+  
+
+    //setMessage("Ticket purchased successfully!"); // set the message after the transaction is successful
+  
   
   async function selectWinner() {
     if (walletAddress == '') {
@@ -137,7 +168,7 @@ function App() {
         params: [tx2],
       });
 
-      console.log(`Winner selected!`);
+      checkTransactionStatus(signedTx2);
 
  
       
