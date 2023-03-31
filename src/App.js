@@ -40,6 +40,7 @@ function App() {
       console.log('MetaMask not detected');
     }
   }
+  
 
   async function handleEnter(event) {
     event.preventDefault();
@@ -62,6 +63,8 @@ function App() {
     });
 
     const provider = await web3Modal.connect();
+        setwalletAddress(provider.selectedAddress);
+    
   
     const selectedAddress = provider.selectedAddress;
     if (!selectedAddress) {
@@ -104,7 +107,8 @@ function App() {
 
       if (data.result.status === "1") {
         console.log("Transaction confirmed!");
-        setMessage("Transaction confirmed!");
+        setMessage("Ticket purchased successfully!"); 
+        // set the message after the transaction is successful
       } else if (data.result.status === "0") {
         console.log("Transaction failed!");
         setMessage("Transaction failed!");
@@ -117,12 +121,7 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-}
-
-    
-  
-
-    //setMessage("Ticket purchased successfully!"); // set the message after the transaction is successful
+  }
   
   
   async function selectWinner() {
@@ -170,27 +169,11 @@ function App() {
 
       checkTransactionStatus(signedTx2);
 
- 
-      
     } catch (error) {
       console.error(error);
     }
   }
 
-  
-  
-  
-
-  // Create a provider to interact with a smart contract
-  // async function connectWallet(){
-
-  //   if(typeof window.ethereum !== 'undefined'){
-  //     await requestAccount();
-
-  //     const provider = new ethers.BrowserProvider(window.ethereum);
-  //     }
-  // }
-  
 
   return (
     <div className="App">
