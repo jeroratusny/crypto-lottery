@@ -36,3 +36,64 @@
     transform: rotate(360deg);
   }
 }
+
+.message {
+  /* Estilos para mensajes en general */
+}
+
+.message.success {
+  color: green;
+}
+
+.message.error {
+  color: red;
+}
+
+.message.pending {
+  color: rgb(242, 255, 0);
+}
+
+
+
+
+/* CSS */
+.button-32 {
+  background-color: #fff000;
+  border-radius: 12px;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 10px 15px;
+  margin-top: 2%;
+  text-align: center;
+  transition: 200ms;
+  width: auto;
+  box-sizing: border-box;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-32:not(:disabled):hover,
+.button-32:not(:disabled):focus {
+  outline: 0;
+  background: #f4e603;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.2), 0 3px 8px 0 rgba(0,0,0,.15);
+}
+
+.button-32:disabled {
+  filter: saturate(0.2) opacity(0.5);
+  -webkit-filter: saturate(0.2) opacity(0.5);
+  cursor: not-allowed;
+}
+
+h1 {
+  font-size: 4rem;
+  color: #FFD700; /* Color dorado */
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 50px;
+}

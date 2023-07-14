@@ -9,12 +9,21 @@ import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
 
-
 function App() {
 
   const [walletAddress, setwalletAddress] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [lastWinner, setLastWinner] = useState('');
   let accounts = '';
+
+  const [balance, setBalance] = useState(0);
+
+  async function updateBalance() {
+    const contractAddress = '0x85e2d4b9c0a42f745ed2dd766fa9362e3902fa6b';
+    const balance = await web3.eth.getBalance(contractAddress);
+    setBalance(web3.utils.fromWei(balance, 'ether'));
+  }
   
 
   async function requestAccount() {
@@ -31,7 +40,6 @@ function App() {
         
         accounts[0] = web3.utils.toChecksumAddress(accounts[0]);
         setwalletAddress(accounts[0]);
-
       } catch (error) {
         console.log('Error connecting...')
       }
@@ -63,7 +71,7 @@ function App() {
     });
 
     const provider = await web3Modal.connect();
-        setwalletAddress(provider.selectedAddress);
+    setwalletAddress(provider.selectedAddress);
     
   
     const selectedAddress = provider.selectedAddress;
@@ -71,10 +79,8 @@ function App() {
       throw new Error('No address selected');
     }
   
-    const minimumBet = await contract.methods.minimumBet().call();
-    const value = '500000000000000000';
-    const data = contract.methods.enter().encodeABI();
-  
+    const value = '500000000000000000'; // minimum bet
+    const data = contract.methods.enter().encodeABI(); 
     const gas = await contract.methods.enter().estimateGas({ value });
     const gasString = gas.toString();
 
@@ -98,6 +104,14 @@ function App() {
     checkTransactionStatus(signedTx);
   }  
 
+  useEffect(() => {
+    async function fetchData() {
+      const winner = await contract.methods.getLastWinner().call();
+      setLastWinner(winner);
+    }
+    fetchData();
+  }, []);
+
   const checkTransactionStatus = async (signedTx) => {
     try {
       const response = await fetch(
@@ -106,14 +120,14 @@ function App() {
       const data = await response.json();
 
       if (data.result.status === "1") {
-        console.log("Transaction confirmed!");
         setMessage("Ticket purchased successfully!"); 
-        // set the message after the transaction is successful
+        setMessageType("success");
       } else if (data.result.status === "0") {
-        console.log("Transaction failed!");
         setMessage("Transaction failed!");
+        setMessageType("error");
       } else {
-        console.log("Transaction is still pending.");
+        setMessage("Transaction pending...");
+        setMessageType("pending");
         setTimeout(() => {
           checkTransactionStatus(signedTx);
         }, 3000);
@@ -129,7 +143,6 @@ function App() {
       await requestAccount(); // Llama a `requestAccount()` si la variable de estado es `false`.
     }
     try {
-
       const providerOptions = {
         walletconnect: {
           package: WalletConnectProvider,
@@ -179,23 +192,35 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1> Crypto Lottery </h1>
-        <Balance /> 
+       
+        <div> 
+          <Balance onUpdateBalance={updateBalance} />
+        </div>
 
-        <h3> Wallet Address: {walletAddress}</h3>
+        <h3> 🎫 Ticket Price: 0.5 MATIC <img class="coin-logo" src="https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png" loading="lazy" alt="MATIC logo"></img></h3>
 
-        <button
+        {/* <h3> Wallet Address: {walletAddress}</h3> */}
+
+        <button class="button-32" role="button"
         onClick={handleEnter}
-        > Enter </button>
-        <br></br>
+        > Buy a Ticket! 🎫 </button>
+
+        {message && (
+        <div className={`message ${messageType}`}>
+          {message}
+        </div>
+        )}
+
+       <h3>Last Winner: {lastWinner}</h3>
         
-        <button
-        onClick={selectWinner}
-        > Select Winner </button>
         
-        {message && <div>{message}</div>} {/* show the message if it's not empty */}
-      </header>
+        <button class="button-32" role="button" onClick={selectWinner}>
+           Select Winner <br /> (can only be called by the owner) 
+        </button>
+
+        
+</header>
     </div>
   );
 }
-
 export default App;

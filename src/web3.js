@@ -5,7 +5,7 @@ import Web3 from 'web3';
 const web3 = new Web3('https://polygon-mumbai.infura.io/v3/d9979c0504154fa98e431abb0a424c1d');
 //const contractAddress = '0x03116d5dA54Bc8507f8F26Df4136eb5C7492A141';
 
-const contractAddress = '0x85e2d4b9c0a42f745ed2dd766fa9362e3902fa6b';
+const contractAddress = '0x75fAaEFC3F00D28F1AE70E50a0D8bBfD73dC7B10';
 
 const abi = [
 	{
@@ -22,10 +22,36 @@ const abi = [
 	},
 	{
 		"inputs": [],
-		"name": "manager",
+		"name": "getLastWinner",
 		"outputs": [
 			{
 				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lastWinner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "manager",
+		"outputs": [
+			{
+				"internalType": "address payable",
 				"name": "",
 				"type": "address"
 			}
@@ -60,25 +86,6 @@ const abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "players",
-		"outputs": [
-			{
-				"internalType": "address payable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "randomNum",
 		"outputs": [
@@ -96,6 +103,19 @@ const abi = [
 		"name": "selectWinner",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalPot",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]
